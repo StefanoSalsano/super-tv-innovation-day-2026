@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>SUPER: from the programmable data plane to the sovereign cloud</title>
+
+<link rel="stylesheet" href="assets/reveal/reveal.css">
+<link rel="stylesheet" href="assets/reveal/theme/white.css" id="theme">
+
+<style>
+  :root {
+    --c-primary:   #078052;   /* Tor Vergata green */
+    --c-primary-d: #045a3a;
+    --c-primary-l: #d1fae5;
+    --c-accent:    #d97706;    /* warm orange */
+    --c-good:      #047857;
+    --c-bad:       #b91c1c;
+    --c-muted:     #6b7280;
+    --c-soft:      #e5e7eb;
+    --c-bg-soft:   #f3f4f6;
+    --c-pnrr-bg:   #003d80;    /* PNRR funding-strip navy */
+  }
+  .reveal { font-family: "Segoe UI", "Helvetica Neue", Helvetica, Arial, sans-serif; font-size: 40px; }
+  .reveal h1, .reveal h2, .reveal h3, .reveal h4 {
+    font-family: "Segoe UI", "Helvetica Neue", Helvetica, Arial, sans-serif;
+    color: var(--c-primary); text-transform: none; letter-spacing: -0.01em; }
+  .reveal h2 { font-size: 1.5em; margin: 0 0 0.4em; }
+  .reveal h3 { font-size: 1.1em; }
+  .reveal section { text-align: left; }
+  .reveal section.center { text-align: center; }
+  .reveal ul, .reveal ol { font-size: 0.78em; line-height: 1.4; margin: 0.3em 0; padding-left: 1.2em; }
+  .reveal li { margin: 0.15em 0; }
+  .reveal p { font-size: 0.85em; line-height: 1.4; margin: 0.3em 0; }
+  .reveal code { font-family: "Consolas","Menlo",monospace; font-size: 0.85em;
+                 background: var(--c-bg-soft); padding: 1px 4px; border-radius: 3px; color: #111; }
+  .accent { color: var(--c-accent); font-weight: 600; }
+  .good { color: var(--c-good); font-weight: 600; }
+  .bad  { color: var(--c-bad);  font-weight: 600; }
+  .primary { color: var(--c-primary); font-weight: 600; }
+  .muted { color: var(--c-muted); }
+  .footer { position: fixed; bottom: 8px; left: 16px; font-size: 11px; color: var(--c-muted); z-index: 50; }
+  .footer .sep { margin: 0 6px; color: var(--c-soft); }
+  #pdfBtn { position: fixed; bottom: 10px; right: 14px; z-index: 60; cursor: pointer;
+            font: 600 13px/1 "Segoe UI", Arial, sans-serif; color: #fff; background: var(--c-primary);
+            border: none; border-radius: 5px; padding: 8px 12px; opacity: .82; }
+  #pdfBtn:hover { opacity: 1; }
+  @media print { .footer, #pdfBtn { display: none !important; } }
+  .part-banner { display: inline-block; background: var(--c-primary); color: #fff;
+    padding: 5px 14px; border-radius: 3px; font-size: 0.5em; letter-spacing: 0.15em;
+    text-transform: uppercase; margin-bottom: 0.5em; }
+  /* === TITLE SLIDE SCOPED FONT BASE — keep its own scope so global tweaks don't break it === */
+  .reveal .title-slide { font-size: 32px; }
+  .title-slide .part-banner { font-size: 0.7em; padding: 7px 18px; margin: 0.6em 0; }
+  .title-slide h1 { font-size: 2.5em; line-height: 1.15; margin: 0.4em 0 0.5em; }
+  .title-slide .authors { font-size: 0.95em; color: #222; line-height: 1.55; margin: 0.4em 0; }
+  .title-slide .venue { font-size: 0.78em; color: var(--c-muted); margin: 1em 0 0.4em; line-height: 1.5; }
+  .title-slide .logo-strip { display: flex; justify-content: center; align-items: center; gap: 32px; margin-bottom: 0.4em; }
+  .title-slide .logo-strip img { height: 130px; width: auto; }
+  .prin-banner { margin: 0.8em auto 0.3em; width: 100%; background: var(--c-pnrr-bg);
+    border-radius: 3px; padding: 14px 16px; color: #fff; display: flex; align-items: center;
+    justify-content: space-between; font-size: 0.72em; line-height: 1.25; text-align: left; }
+  .prin-banner .pb-item { display: flex; align-items: center; gap: 8px; flex: 1; padding: 0 6px; }
+  .prin-banner .pb-item + .pb-item { border-left: 1px solid rgba(255,255,255,0.35); }
+  .prin-banner .pb-icon { width: 64px; height: 64px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; }
+  .prin-banner .pb-icon--white { background: #fff; border-radius: 4px; padding: 3px; }
+  .prin-banner .pb-img { width: 100%; height: 100%; object-fit: contain; display: block; }
+  .prin-banner .pb-text strong { display: block; font-weight: 700; font-size: 1.1em; margin-bottom: 1px; white-space: nowrap; }
+  .prin-banner .pb-text span   { font-weight: 400; opacity: 0.9; white-space: nowrap; }
+  .prin-banner .pb-newton { background: #fff; color: var(--c-pnrr-bg); padding: 8px 14px; border-radius: 3px;
+    font-weight: 700; text-align: center; line-height: 1.2; flex-shrink: 0; }
+  .prin-banner .pb-newton strong { font-size: 1.35em; display: block; color: var(--c-primary); }
+  .prin-banner .pb-newton span   { font-size: 0.95em; color: #222; }
+  table.cmp { font-size: 0.7em; border-collapse: collapse; margin: 0.4em auto; width: 100%; }
+  table.cmp th, table.cmp td { border: 1px solid var(--c-soft); padding: 6px 9px; vertical-align: top; }
+  table.cmp th { background: var(--c-primary); color: #fff; text-align: left; font-weight: 600; }
+  table.cmp td.row-label { background: var(--c-bg-soft); font-weight: 600; }
+  table.cmp tr.highlight td { background: #fef3c7; }
+  .two-col { display: flex; gap: 18px; align-items: flex-start; }
+  .two-col > div { flex: 1; }
+  .two-col svg.figure { width: 100%; height: auto; max-height: 620px; }
+  .reveal section.fill { height: 100%; display: flex; flex-direction: column; justify-content: center; }
+  .reveal section.fill > h2 { margin-bottom: 0.6em; }
+  .msg-box { border-left: 8px solid var(--c-primary); background: #fafafa; padding: 22px 28px; border-radius: 4px;
+    margin: 12px 0; font-size: 0.95em; line-height: 1.4; display: flex; gap: 22px; align-items: center; }
+  .msg-box .msg-num { font-size: 1.6em; font-weight: 800; color: var(--c-primary); line-height: 1; min-width: 1.3em; text-align: center; }
+  .msg-box .msg-body strong { color: var(--c-primary); font-size: 1.15em; display: block; margin-bottom: 4px; }
+  .msg-box--accent { border-left-color: var(--c-accent); }
+  .msg-box--accent .msg-num { color: var(--c-accent); }
+  .msg-box--accent .msg-body strong { color: var(--c-accent); }
+  .takeaway { background: #fef3c7; border-left: 4px solid var(--c-accent); padding: 9px 13px; font-size: 0.78em;
+    margin-top: 0.5em; border-radius: 3px; }
+  .takeaway strong { color: var(--c-accent); }
+  .box { border: 1px solid var(--c-soft); border-radius: 4px; padding: 18px 22px; font-size: 0.85em; background: #fafafa; }
+  svg.figure { display: block; margin: 0 auto; max-width: 100%; height: auto; }
+  .reveal section .one-line li { white-space: nowrap; }
+  svg text { font-family: "Segoe UI", "Helvetica Neue", Arial, sans-serif; }
+  /* ===== SUPER @ Tor Vergata Innovation Day — additions ===== */
+  .title-slide .logo-strip img.super { height: 110px; }
+  .title-slide .subtitle { font-size: 0.95em; color: #333; margin: -0.2em 0 0.6em; }
+  .firma-strip { margin: 0.9em auto 0; background: #fff; border: 1px solid var(--c-soft); border-radius: 4px;
+    padding: 10px 24px; display: inline-block; }
+  .firma-strip img { height: 72px; width: auto; display: block; }
+  .live { display: inline-block; background: var(--c-bad); color: #fff; font-size: 0.42em; font-weight: 700;
+    letter-spacing: 0.12em; padding: 5px 12px; border-radius: 3px; vertical-align: middle; margin-left: 0.6em;
+    text-transform: uppercase; }
+  .reveal h2 .full { font-size: 0.55em; color: var(--c-muted); font-weight: 400; margin-left: 0.4em; }
+  .two-col.center-v { align-items: center; }
+  .two-col > .grow2 { flex: 2; }
+  .two-col > .grow3 { flex: 3; }
+  .fig { width: 100%; height: auto; display: block; border: 1px solid var(--c-soft); border-radius: 4px; background: #fff; }
+  .figcap { font-size: 0.6em; color: var(--c-muted); text-align: center; margin-top: 0.4em; }
+  .side-box { border-left: 6px solid var(--c-primary); }
+  .side-box.bad { border-left-color: var(--c-bad); }
+  .side-box h3 { margin: 0 0 0.3em; font-size: 0.95em; }
+  .side-box.bad h3 { color: var(--c-bad); }
+  pre.cli { font-family: "Consolas","Menlo",monospace; font-size: 0.6em; line-height: 1.45; background: #0f172a; color: #e2e8f0;
+    padding: 22px 28px; border-radius: 6px; margin: 0.2em 0; white-space: pre; box-shadow: none; width: 100%; }
+  pre.cli .c { color: #86efac; }
+  .chips { display: flex; gap: 12px; flex-wrap: wrap; margin: 0.3em 0 0.6em; }
+  .chip { font-size: 0.6em; background: var(--c-primary-l); color: var(--c-primary-d); padding: 4px 14px; border-radius: 999px; font-weight: 600; }
+  .trl { display: inline-block; background: var(--c-primary); color: #fff; font-size: 0.75em; padding: 2px 10px; border-radius: 3px; margin-left: 0.3em; }
+  .path { font-size: 0.8em; font-weight: 600; color: var(--c-primary-d); text-align: center; margin-top: 0.6em; }
+  .path .arr { color: var(--c-accent); margin: 0 0.35em; }
+  .qr-row { display: flex; justify-content: center; gap: 120px; margin-top: 0.4em; }
+  .qr-row .qr { text-align: center; font-size: 0.6em; font-weight: 600; }
+  .qr-row .qr img { width: 230px; height: 230px; display: block; margin: 0 auto 8px; }
+  .meet { text-align: center; }
+  .meet .big { font-size: 1.15em; font-weight: 700; color: var(--c-primary); }
+  .meet .when { font-size: 0.9em; color: #222; margin-top: 0.15em; }
+  .also { font-size: 0.66em; color: var(--c-muted); margin-top: 0.6em; }
+  /* fixes after first render */
+  .reveal .slides > section.fill.present { display: flex !important; }
+  .title-slide h1 { font-size: 2.15em; margin: 0.3em 0 0.4em; }
+  .title-slide .logo-strip img { height: 110px; }
+  .title-slide .logo-strip img.super { height: 96px; }
+  .box.side-box { font-size: 1em; }
+  .box.side-box ul { font-size: 0.8em; }
+  .box.side-box p { font-size: 0.8em; }
+  pre.cli { box-sizing: border-box; font-size: 0.62em; }
+  .qr-row .qr img { width: 280px; height: 280px; }
+  /* print-pdf: keep fill slides full-height and centered on each page */
+  html.print-pdf .reveal .slides .pdf-page > section.fill { display: flex !important; top: 0 !important; height: 900px !important; min-height: 900px !important; }
+  .reveal p.also { font-size: 0.55em; color: var(--c-muted); }
+</style>
+</head>
+<body>
+
+<div class="footer">
+  <span>S. Salsano et al.</span><span class="sep">|</span>
+  <span>SUPER: from the programmable data plane to the sovereign cloud</span><span class="sep">|</span>
+  <span>Tor Vergata Innovation Day &mdash; Rome 2026</span>
+</div>
+
+<button id="pdfBtn" title="Open the print-ready layout, then choose Save as PDF (enable Background graphics)" onclick="location.search='print-pdf&autoprint=1'">Save as PDF</button>
+
+<div class="reveal"><div class="slides">
+
+<!-- ===== 1. TITLE ===== -->
+<section class="title-slide center">
+  <div class="logo-strip">
+    <img src="assets/tor-vergata-logo.png" alt="University of Rome Tor Vergata">
+    <img src="assets/cnit-logo.png" alt="CNIT">
+    <img class="super" src="assets/logo-super.png" alt="RESTART SUPER">
+  </div>
+  <div><span class="part-banner">PNRR-PNC &middot; Tor Vergata Innovation Day 2026</span></div>
+  <h1>SUPER: from the programmable data plane<br><span class="accent">to the sovereign cloud</span></h1>
+  <div class="subtitle">Open-source components for high-availability cloud/edge infrastructures with GPU sharing</div>
+  <div class="authors">
+    <strong>S. Salsano</strong><sup>1,2</sup>, A. Mayer<sup>1,2</sup>, P. Loreti<sup>1,2</sup>, L. Bracciale<sup>1,2</sup>, M. Orazi<sup>1</sup><br>
+    <span class="muted"><sup>1</sup>University of Rome Tor Vergata, Italy &nbsp;&middot;&nbsp; <sup>2</sup>CNIT</span>
+  </div>
+  <div class="venue">
+    <strong style="color:#222;">Tor Vergata Innovation Day</strong> &mdash; <em>7 October 2026, Rome, Italy</em><br>
+    PNRR &middot; RESTART &middot; Spoke 4 &middot; Sub-project S2 SUPER
+  </div>
+  <div class="firma-strip"><img src="assets/logo-firma.png" alt="Funded by the European Union NextGenerationEU · MUR · Italia Domani · RESTART"></div>
+</section>
+
+<!-- ===== 2. CHALLENGES ===== -->
+<section class="fill">
+  <h2>The challenges</h2>
+  <div class="msg-box">
+    <div class="msg-num">1</div>
+    <div class="msg-body"><strong>Expensive, underused GPUs.</strong> Static assignment to VMs and containers.</div>
+  </div>
+  <div class="msg-box">
+    <div class="msg-num">2</div>
+    <div class="msg-body"><strong>Lock-in.</strong> Licensing costs of proprietary platforms.</div>
+  </div>
+  <div class="msg-box">
+    <div class="msg-num">3</div>
+    <div class="msg-body"><strong>Reliable measurements.</strong> Performance in virtualized environments.</div>
+  </div>
+  <div class="msg-box msg-box--accent">
+    <div class="msg-num">4</div>
+    <div class="msg-body"><strong>Per-flow monitoring.</strong> Fine-grained traffic metrics, without overloading the nodes.</div>
+  </div>
+</section>
+
+<!-- ===== 3. FIGO: problem and solution ===== -->
+<section class="fill">
+  <h2>FIGO <span class="full">Federated Infrastructure for GPU Orchestration</span></h2>
+  <div class="two-col">
+    <div class="box side-box bad">
+      <h3>Today</h3>
+      <ul>
+        <li>OpenStack-like managers assign GPUs <strong>statically</strong></li>
+        <li>An allocated GPU stays locked to its VM</li>
+        <li>&hellip;even when the VM is not running</li>
+      </ul>
+    </div>
+    <div class="box side-box">
+      <h3 class="primary">With FIGO</h3>
+      <ul>
+        <li><strong>Dynamic</strong> GPU allocation to VMs and containers</li>
+        <li>Owners keep <strong>priority</strong> on their GPUs</li>
+        <li>Idle GPUs are <strong>shared</strong> across the federation</li>
+      </ul>
+    </div>
+  </div>
+  <div class="takeaway" style="margin-top: 1.4em;">
+    <strong>Takeaway.</strong> Higher GPU utilization, and GPU access for researchers who have none.
+  </div>
+</section>
+
+<!-- ===== 4. FIGO architecture ===== -->
+<section class="fill">
+  <h2>FIGO &mdash; architecture</h2>
+  <div class="two-col center-v">
+    <div class="grow2">
+      <ul class="one-line">
+        <li>Built on <strong>incus</strong></li>
+        <li>Manages VMs and containers</li>
+        <li>GPU profiles and users</li>
+        <li>Federated remote nodes</li>
+      </ul>
+      <div class="takeaway" style="margin-top: 1.6em;">
+        <strong>Open source:</strong><br>github.com/StefanoSalsano/figo
+      </div>
+    </div>
+    <div class="grow3">
+      <img class="fig" src="assets/fig-figo.png" alt="FIGO architecture">
+      <div class="figcap">Each remote node runs incus, coordinated by the main node</div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== 5. FIGO CLI ===== -->
+<section class="fill">
+  <h2>FIGO &mdash; command line <span class="live">Live demo</span></h2>
+<pre class="cli"><span class="c"># Create a new user</span>
+figo user add john_doe -e john@example.com -n "John Doe" \
+     -o "Example Corp" -w -k -s
+
+<span class="c"># Enroll a remote node</span>
+figo remote enroll my_remote 192.168.1.100 8443 ubuntu \
+     ~/.config/incus/client.crt /var/lib/incus/server.crt --loc_name main
+
+<span class="c"># Attach a GPU to an instance on a remote node</span>
+figo gpu add my_remote:my_project.instance_name</pre>
+  <div class="takeaway" style="margin-top: 1em;">
+    <strong>One CLI</strong> for instances, GPU profiles, users and remote nodes.
+  </div>
+</section>
+
+<!-- ===== 6. SHARY ===== -->
+<section class="fill">
+  <h2>SHARY <span class="full">SHaring Any Resource made easY</span></h2>
+  <div class="two-col center-v">
+    <div class="grow2">
+      <ul class="one-line">
+        <li><strong>One web front end</strong>: Prognose</li>
+        <li>to book RESTART testbed resources:</li>
+        <li>GPUs, SmartNICs, P4 switches</li>
+        <li>Calendar booking, conflict checks</li>
+        <li>Specific module per resource</li>
+      </ul>
+      <div class="takeaway" style="margin-top: 1.6em;">
+        <strong>IEEE NOMS 2025</strong> &mdash; <em>Sharing GPUs and Programmable Switches in a Federated Testbed with SHARY</em>
+      </div>
+    </div>
+    <div class="grow3">
+      <img class="fig" src="assets/fig-shary.png" alt="SHARY architecture">
+      <div class="figcap">Common front end and specific modules for each resource</div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== 7. From booking to GPU: Prognose + FIGO ===== -->
+<section class="fill">
+  <h2>From booking to GPU: Prognose + FIGO</h2>
+  <svg class="figure" viewBox="0 0 1500 260" xmlns="http://www.w3.org/2000/svg">
+    <defs><marker id="ar2" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto"><path d="M0,0 L12,6 L0,12 z" fill="#078052"/></marker></defs>
+    <g font-size="27" text-anchor="middle" font-weight="600">
+      <rect x="5"    y="50" width="250" height="150" rx="10" fill="#fef3c7" stroke="#d97706" stroke-width="3"/>
+      <text x="130"  y="112">User books</text><text x="130" y="148">a GPU</text><text x="130" y="182" font-size="22" font-weight="400">Prognose calendar</text>
+      <rect x="310"  y="50" width="250" height="150" rx="10" fill="#f3f4f6" stroke="#6b7280" stroke-width="3"/>
+      <text x="435"  y="112">Event</text><text x="435" y="148">processor</text><text x="435" y="182" font-size="22" font-weight="400">start / end</text>
+      <rect x="615"  y="50" width="270" height="150" rx="10" fill="#d1fae5" stroke="#078052" stroke-width="3"/>
+      <text x="750"  y="112">GRM webhook</text><text x="750" y="150" font-size="22" font-weight="400">signature check</text><text x="750" y="182" font-size="22" font-weight="400">duplicate-safe</text>
+      <rect x="940"  y="50" width="250" height="150" rx="10" fill="#d1fae5" stroke="#078052" stroke-width="3"/>
+      <text x="1065" y="112">FIGO</text><text x="1065" y="150" font-size="22" font-weight="400">gpu add</text><text x="1065" y="182" font-size="22" font-weight="400">gpu remove</text>
+      <rect x="1245" y="50" width="250" height="150" rx="10" fill="#f3f4f6" stroke="#6b7280" stroke-width="3"/>
+      <text x="1370" y="112">User</text><text x="1370" y="148">instance</text><text x="1370" y="182" font-size="22" font-weight="400">gets / loses GPU</text>
+      <line x1="255"  y1="125" x2="302"  y2="125" stroke="#078052" stroke-width="5" marker-end="url(#ar2)"/>
+      <line x1="560"  y1="125" x2="607"  y2="125" stroke="#078052" stroke-width="5" marker-end="url(#ar2)"/>
+      <line x1="885"  y1="125" x2="932"  y2="125" stroke="#078052" stroke-width="5" marker-end="url(#ar2)"/>
+      <line x1="1190" y1="125" x2="1237" y2="125" stroke="#078052" stroke-width="5" marker-end="url(#ar2)"/>
+    </g>
+  </svg>
+  <ul class="one-line" style="margin-top: 0.5em;">
+    <li><strong>GRM</strong> &mdash; GPU Reservation Manager, an external webhook</li>
+    <li>Reservation intent (Prognose) separated from enforcement (FIGO)</li>
+    <li>Resilient to duplicate events, GRM restarts, FIGO unavailability</li>
+  </ul>
+  <div class="takeaway" style="margin-top: 0.8em;">
+    <strong>Takeaway.</strong> Enforceable GPU reservations, without modifying the reservation platform.
+  </div>
+  <p class="also">E. Yazdani, MSc thesis, University of Rome Tor Vergata, A.Y. 2024&ndash;25 &middot; Prognose: docs.prognose.crownlabs.polito.it</p>
+</section>
+
+<!-- ===== 8. PASTRAMI (method) ===== -->
+<section class="fill">
+  <h2>PASTRAMI &mdash; trustworthy performance measurements</h2>
+  <p class="muted" style="font-size:0.7em; margin-top:-0.4em;"><strong>P</strong>erformance <strong>A</strong>ssessment of <strong>S</strong>of<strong>T</strong>ware <strong>R</strong>outers <strong>A</strong>ddressing <strong>M</strong>easurement <strong>I</strong>naccuracy</p>
+  <div class="two-col center-v">
+    <div class="grow3">
+      <ul class="one-line">
+        <li>Traffic generator &rarr; <strong>system under test</strong></li>
+        <li>Linux software routers (e.g., SRv6)</li>
+        <li>Scans a <strong>wide range of rates</strong></li>
+        <li>Loss and delivery curves, 95% CI</li>
+        <li>Is <strong>PDR@0.5%</strong> reliable here?</li>
+      </ul>
+      <div class="takeaway" style="margin-top: 1.2em;">
+        <strong>PDR@0.5%</strong> = Partial Drop Rate: max rate with &le;0.5% loss
+      </div>
+    </div>
+    <div class="grow3">
+      <img class="fig" src="assets/pastrami-arch.png" alt="PASTRAMI architecture: TRex traffic generator, test automator, system under test, Colab post-processing">
+      <div class="figcap">Test automator, TRex traffic generator, system under test, Colab post-processing</div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== 9. PASTRAMI (good vs bad) ===== -->
+<section class="fill">
+  <h2>PASTRAMI &mdash; is the measurement reliable?</h2>
+  <div class="two-col">
+    <div>
+      <img class="fig" style="max-height:440px; object-fit:contain;" src="assets/pastrami-good.png" alt="Delivery ratio vs rate, sharp drop: good experiment">
+      <div class="figcap"><span class="good">Good:</span> sharp transition to saturation &rarr; PDR@0.5% is reliable</div>
+    </div>
+    <div>
+      <img class="fig" style="max-height:440px; object-fit:contain;" src="assets/pastrami-bad.png" alt="Delivery ratio vs rate, gradual decline: bad experiment">
+      <div class="figcap"><span class="bad">Bad:</span> gradual losses &rarr; PDR@0.5% alone is misleading</div>
+    </div>
+  </div>
+  <ul class="one-line" style="margin-top: 0.5em;">
+    <li>Saturation detected via the <strong>Throughput Increase Ratio</strong></li>
+    <li><strong>netrace</strong>: eBPF CPU-load tracing &mdash; Linux kernel versions behave differently</li>
+  </ul>
+  <div class="takeaway" style="margin-top: 0.5em;"><strong>Open source:</strong> github.com/netgroup/pastrami</div>
+</section>
+
+<!-- ===== 10. eFFECT ===== -->
+<section class="fill">
+  <h2>eFFECT &mdash; per-flow monitoring with eBPF</h2>
+  <svg class="figure" viewBox="0 0 1500 300" xmlns="http://www.w3.org/2000/svg">
+    <defs><marker id="ar" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto"><path d="M0,0 L12,6 L0,12 z" fill="#078052"/></marker></defs>
+    <g font-size="34" text-anchor="middle" font-weight="600">
+      <rect x="20"   y="70" width="300" height="140" rx="10" fill="#d1fae5" stroke="#078052" stroke-width="3"/>
+      <text x="170"  y="132">eBPF programs</text><text x="170" y="176" font-size="28" font-weight="400">Linux kernel</text>
+      <rect x="410"  y="70" width="300" height="140" rx="10" fill="#f3f4f6" stroke="#6b7280" stroke-width="3"/>
+      <text x="560"  y="132">Agent</text><text x="560" y="176" font-size="28" font-weight="400">user space</text>
+      <rect x="800"  y="70" width="300" height="140" rx="10" fill="#f3f4f6" stroke="#6b7280" stroke-width="3"/>
+      <text x="950"  y="152">Prometheus</text>
+      <rect x="1190" y="70" width="290" height="140" rx="10" fill="#fef3c7" stroke="#d97706" stroke-width="3"/>
+      <text x="1335" y="152">Grafana</text>
+      <line x1="320"  y1="140" x2="402"  y2="140" stroke="#078052" stroke-width="5" marker-end="url(#ar)"/>
+      <line x1="710"  y1="140" x2="792"  y2="140" stroke="#078052" stroke-width="5" marker-end="url(#ar)"/>
+      <line x1="1100" y1="140" x2="1182" y2="140" stroke="#078052" stroke-width="5" marker-end="url(#ar)"/>
+    </g>
+  </svg>
+  <ul class="one-line" style="margin-top: 0.6em;">
+    <li>Flow-level metrics collected <strong>in the kernel</strong></li>
+    <li><strong>High temporal granularity</strong>, minimal overhead</li>
+  </ul>
+  <div class="takeaway" style="margin-top: 1em;">
+    <strong>Takeaway.</strong> Per-flow metrics, from the kernel to Grafana dashboards.
+  </div>
+</section>
+
+<!-- ===== 9. Sovereign cloud ===== -->
+<section class="fill">
+  <h2>Towards the sovereign cloud</h2>
+  <p>An <strong>open-source</strong>, <strong>high-availability</strong> cloud/datacenter platform, sovereign and lock-in free, with <strong>GPU sharing</strong> for AI workloads.</p>
+  <div class="chips"><span class="chip">CloudStack</span><span class="chip">Linux</span><span class="chip">eBPF</span><span class="chip">SRv6</span><span class="chip">GPU sharing</span></div>
+  <div class="two-col">
+    <div class="box side-box">
+      <h3 class="primary">Platform base <span class="trl">TRL 9</span></h3>
+      <p>CloudStack in high availability, in operation in Common Net datacenters.</p>
+    </div>
+    <div class="box side-box" style="border-left-color: var(--c-accent);">
+      <h3 class="accent">SUPER components</h3>
+      <p>Open-source prototypes FIGO, SHARY, PASTRAMI, eFFECT converging into the platform.</p>
+    </div>
+  </div>
+  <div class="also">Also in SUPER: XDP-accelerated IDS (Suricata); adaptive SRv6 paths for LLM training.</div>
+</section>
+
+<!-- ===== 10. Nano-f ===== -->
+<section class="fill">
+  <h2>Nano-f &mdash; from research to market</h2>
+  <p class="accent" style="font-size:0.9em;">Local and sovereign infrastructures, designed with hyperscale efficiency principles</p>
+  <ul>
+    <li><strong>Spin-off</strong> of the University of Rome Tor Vergata, approved, being incorporated</li>
+    <li>Industrial and commercial partner: <strong>Common Net</strong>, cloud provider and ISP</li>
+    <li>Private and sovereign clouds, edge cloud, <strong>GPU-as-a-Service</strong></li>
+    <li>Advanced networking: Linux, eBPF, SRv6</li>
+    <li>For ISPs, cloud providers, enterprises and public administration</li>
+  </ul>
+  <div class="path">Consulting <span class="arr">&rarr;</span> Managed services <span class="arr">&rarr;</span> Software platform <span class="arr">&rarr;</span> Licenses</div>
+</section>
+
+<!-- ===== 11. Let's meet ===== -->
+<section class="fill">
+  <h2>Let's meet</h2>
+  <div class="meet">
+    <div class="big">B2B meetings</div>
+    <div class="when">12:00&ndash;15:15 &middot; Room L4</div>
+    <p style="margin-top:0.4em;"><code>stefano.salsano@uniroma2.it</code></p>
+  </div>
+  <div class="qr-row">
+    <div class="qr"><img src="assets/qr-figo.svg" alt="QR code: FIGO on GitHub">FIGO on GitHub</div>
+    <div class="qr"><img src="assets/qr-super.svg" alt="QR code: SUPER on RESTART">SUPER on RESTART</div>
+  </div>
+  <p style="text-align:center; margin-top:0.8em; font-size:1.05em;"><span class="primary"><strong>Thank you.</strong></span></p>
+</section>
+
+</div></div>
+
+<script src="assets/reveal/reveal.js"></script>
+<script src="assets/reveal/plugin/notes/notes.js"></script>
+<script>
+  Reveal.initialize({
+    hash: true, slideNumber: 'c/t', transition: 'slide',
+    width: 1600, height: 900, margin: 0.04, minScale: 0.2, maxScale: 2.0,
+    plugins: [ RevealNotes ]
+  }).then(function () {
+    function updateChrome() {
+      var first = Reveal.getIndices().h === 0;
+      var b = document.getElementById('pdfBtn'); if (b) b.style.display = first ? 'block' : 'none';
+      var sn = document.querySelector('.reveal .slide-number'); if (sn) sn.style.display = first ? 'none' : 'block';
+    }
+    if (!/print-pdf/.test(location.search)) { updateChrome(); Reveal.on('slidechanged', updateChrome); }
+    if (/autoprint/.test(location.search)) { setTimeout(function () { window.print(); }, 1500); }
+  });
+</script>
+</body>
+</html>

@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SUPER: from the programmable data plane to the sovereign cloud — Tor Vergata Innovation Day 2026</title>
+<meta name="description" content="Slides and materials for SUPER (PNRR RESTART) at the Tor Vergata Innovation Day, 7 October 2026.">
+<meta property="og:type" content="website">
+<meta property="og:title" content="SUPER: from the programmable data plane to the sovereign cloud">
+<meta property="og:description" content="Open-source components for high-availability cloud/edge infrastructures with GPU sharing — Tor Vergata Innovation Day 2026.">
+<meta property="og:url" content="https://stefanosalsano.github.io/super-tv-innovation-day-2026/">
+<style>
+  :root{
+    --bg:#ffffff; --ink:#111827; --mute:#6b7280; --line:#e5e7eb; --panel:#f9fafb;
+    --accent:#078052; --accent-d:#045a3a; --accent-soft:#e7f6ef; --accent-ink:#065f46;
+  }
+  @media (prefers-color-scheme: dark){
+    :root{
+      --bg:#0c1116; --ink:#e6e9ee; --mute:#98a2b3; --line:#232b36; --panel:#131a22;
+      --accent:#2fb583; --accent-d:#57c99b; --accent-soft:#0f2b21; --accent-ink:#7fd8b4;
+    }
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  body{font-family:ui-sans-serif,-apple-system,"Segoe UI",Inter,Roboto,"Helvetica Neue",Arial,sans-serif;
+       background:var(--bg); color:var(--ink); line-height:1.6;
+       -webkit-font-smoothing:antialiased; text-rendering:optimizeLegibility;}
+  .wrap{max-width:840px; margin:0 auto; padding:0 1.5rem;}
+  a{color:var(--accent); text-decoration:none;}
+  a:hover{text-decoration:underline;}
+  code{font-family:ui-monospace,Consolas,Menlo,monospace; font-size:.9em; background:var(--panel);
+       border:1px solid var(--line); padding:.05em .35em; border-radius:5px;}
+
+  /* ---- hero: light, big type, no colored band ---- */
+  header{padding:2.52rem 0 1.68rem; border-bottom:1px solid var(--line);}
+  .kicker{font-size:.8rem; font-weight:650; letter-spacing:.16em; text-transform:uppercase;
+          color:var(--accent); margin-bottom:1rem;}
+  h1{font-size:clamp(2.1rem, 4.6vw, 2.9rem); line-height:1.12; letter-spacing:-.025em;
+     font-weight:750; max-width:27ch;}
+  .sub{font-size:1.12rem; color:var(--mute); max-width:72ch; margin-top:1.1rem;}
+  .chips{display:flex; flex-wrap:wrap; gap:.5rem; margin-top:1.6rem;}
+  .chip{font-size:.83rem; color:var(--ink); border:1px solid var(--line); background:var(--panel);
+        border-radius:999px; padding:.28rem .8rem; white-space:nowrap;}
+  .chip strong{font-weight:600;}
+  .chip.hl{background:var(--accent-soft); border-color:transparent; color:var(--accent-ink); font-weight:600;}
+
+  /* ---- sections ---- */
+  main{padding-bottom:3rem;}
+  section{margin-top:2.8rem;}
+  h2{font-size:1.28rem; font-weight:700; letter-spacing:-.01em; margin-bottom:.9rem;}
+  p{margin-bottom:.8rem;}
+  ul.toc{margin:.4rem 0 .4rem 1.15rem; font-size:.98rem;}
+  ul.toc li{margin-bottom:.45rem;}
+  ul.toc li::marker{color:var(--accent);}
+  .tag{display:inline-block; font-size:.68rem; font-weight:700; letter-spacing:.07em; text-transform:uppercase;
+       background:var(--accent-soft); color:var(--accent-ink); padding:.16rem .5rem; border-radius:999px;
+       margin-left:.35rem; vertical-align:middle;}
+
+  /* ---- card ---- */
+  .card{background:var(--bg); border:1px solid var(--line); border-radius:12px; padding:1.4rem 1.5rem;
+        box-shadow:0 1px 2px rgba(0,0,0,.04); transition:box-shadow .18s ease, transform .18s ease;}
+  .card:hover{box-shadow:0 6px 20px rgba(0,0,0,.07); transform:translateY(-1px);}
+  .card h3{font-size:1.02rem; font-weight:650; margin-bottom:.35rem;}
+  .card p{color:var(--mute); font-size:.95rem; margin-bottom:1rem;}
+  .btn{display:inline-flex; align-items:center; gap:.45rem; font-size:.9rem; font-weight:600;
+       border-radius:8px; padding:.55rem 1.05rem; margin:.15rem .45rem .15rem 0;
+       transition:background .15s ease, border-color .15s ease;}
+  .btn.primary{background:var(--accent); color:#fff;}
+  .btn.primary:hover{background:var(--accent-d); text-decoration:none;}
+  @media (prefers-color-scheme: dark){ .btn.primary{color:#08130e;} }
+  .btn.ghost{border:1px solid var(--line); color:var(--ink); background:transparent;}
+  .btn.ghost:hover{background:var(--panel); text-decoration:none;}
+  .btn .ico{font-size:1rem; line-height:1;}
+
+  footer{border-top:1px solid var(--line); padding:1.6rem 0 2.2rem; margin-top:3rem;
+         font-size:.85rem; color:var(--mute);}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <div class="kicker">PNRR-PNC · Tor Vergata Innovation Day 2026</div>
+    <h1>SUPER: from the programmable data plane to the sovereign cloud</h1>
+    <p class="sub">Open-source components for high-availability cloud/edge infrastructures with GPU sharing.</p>
+    <div class="chips">
+      <span class="chip"><strong>S. Salsano</strong>, A. Mayer, P. Loreti, L. Bracciale, M. Orazi</span>
+      <span class="chip">University of Rome Tor Vergata · CNIT</span>
+      <span class="chip">7 October 2026 · Rome, Italy</span>
+      <span class="chip hl">PNRR · RESTART · Sub-project S2 SUPER</span>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <section>
+    <h2>The slides</h2>
+    <div class="card">
+      <h3>Presentation — 13 slides</h3>
+      <p>Self-contained Reveal.js deck that runs in any browser, also offline. Navigate with the arrow keys
+         or a presenter remote; press <code>S</code> for speaker notes, <code>F</code> for fullscreen.</p>
+      <a class="btn primary" href="slides/presentation.html"><span>Open the slides</span><span class="ico">→</span></a>
+      <a class="btn ghost" href="slides/presentation.pdf"><span>Download PDF</span><span class="ico">↓</span></a>
+    </div>
+  </section>
+
+  <section>
+    <h2>The talk</h2>
+    <p>SUPER develops open-source components that converge into a sovereign, high-availability cloud platform
+       without proprietary lock-in, with GPU sharing for AI workloads.</p>
+    <ul class="toc">
+      <li><strong>FIGO</strong> — Federated Infrastructure for GPU Orchestration: dynamic GPU allocation to VMs and containers, with priority for GPU owners. <a href="https://github.com/StefanoSalsano/figo">github.com/StefanoSalsano/figo</a></li>
+      <li><strong>SHARY</strong> — SHaring Any Resource made easY: one web front end (Prognose) to book GPUs, SmartNICs and P4 switches of the RESTART testbed; GPU reservations are enforced through FIGO.</li>
+      <li><strong>PASTRAMI</strong> — Performance Assessment of SofTware Routers Addressing Measurement Inaccuracy: reliable PDR@0.5% measurements in virtualized environments. <a href="https://github.com/netgroup/pastrami">github.com/netgroup/pastrami</a></li>
+      <li><strong>eFFECT</strong> — per-flow monitoring in the Linux kernel with eBPF, with metrics in Prometheus and Grafana.</li>
+      <li><strong>Nano-f</strong> — Tor Vergata spin-off bringing these results to market.</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>Papers &amp; references</h2>
+    <ul class="toc">
+      <li>S. Salsano et al., <em>“Sharing GPUs and Programmable Switches in a Federated Testbed with SHARY”</em>, IEEE NOMS 2025.</li>
+      <li>C. F. Chiasserini et al., <em>“Morphable Networks for Cross-Layer and Cross-Domain Programmability: A Novel Network Paradigm”</em>, IEEE Vehicular Technology Magazine, 2024.</li>
+      <li>C. Filsfils et al., <em>“Toward Deterministic Path Placement in AI Backends: A Practical SRv6-Based Architecture”</em>, CNSM 2025.</li>
+      <li>S. Salsano et al., <em>“Integrating Extensible In-Band Processing (EIP) into the IOAM Framework”</em>, IEEE CSCN 2025.</li>
+      <li>SUPER on the RESTART website: <a href="https://fondazione-restart.it/projects/s2-super/">fondazione-restart.it/projects/s2-super</a></li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>Notes</h2>
+    <p>Funded by the European Union – NextGenerationEU under the Italian National Recovery and Resilience Plan (PNRR),
+       Mission 4, Component 2, Investment 1.3, project PE00000001 <strong>“RESTART”</strong>.</p>
+    <p style="font-size:.9rem; color:var(--mute);">Contact:
+       <a href="mailto:stefano.salsano@uniroma2.it">stefano.salsano@uniroma2.it</a></p>
+  </section>
+
+</main>
+
+<footer>
+  <div class="wrap">
+    © 2026 S. Salsano, A. Mayer, P. Loreti, L. Bracciale, M. Orazi — slides released under
+    <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>
+    (free to reuse and adapt with attribution). The cited papers are © their publishers.
+  </div>
+</footer>
+
+</body>
+</html>
